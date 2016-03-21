@@ -1,11 +1,11 @@
 'use strict';
 
-angular.module('dablAuth')
+angular.module('dabl-api')
 
 .factory('siteUrl', [
-	'API_URL',
+	'dablApiConfig',
 function(
-	API_URL
+	dablApiConfig
 ) {
 	var version = 16;
 
@@ -14,7 +14,7 @@ function(
 		url = url || '';
 
 		if (url.indexOf('http://') === -1 && url.indexOf('https://') === -1) {
-			url = API_URL + '/' + (url ? url : '');
+			url = dablApiConfig.baseUrl + '/' + (url ? url : '');
 		}
 
 		if (rev) {

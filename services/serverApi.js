@@ -1,14 +1,14 @@
 'use strict';
 
-angular.module('dablAuth')
+angular.module('dabl-api')
 .factory('serverApi', [
 	'$q',
 	'$http',
-	'API_URL',
+	'dablApiConfig',
 function(
 	$q,
 	$http,
-	API_URL
+	dablApiConfig
 ){
 	var serverApi = {
 		makeRequest: function(endpoint, data, method, contentType) {
@@ -21,7 +21,7 @@ function(
 			var deferredAbort = $q.defer(),
 				options = {
 					method: method,
-					url: API_URL + '/' + endpoint,
+					url: dablApiConfig.baseUrl + '/' + endpoint,
 					data: data,
 					timeout: deferredAbort.promise
 				};

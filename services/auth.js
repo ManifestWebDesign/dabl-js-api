@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('dablAuth')
+angular.module('dabl-api')
 
 .service('Auth', [
 	'$rootScope',

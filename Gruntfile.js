@@ -46,7 +46,7 @@ module.exports = function (grunt) {
 			},
 			depsJs: {
 				files: {
-					'dist/dabl-auth.js': [
+					'dist/dabl-api.js': [
 						'bower_components/dabl/dist/scripts/dabl.js',
 						'bower_components/dabl/dist/scripts/dabl.adapter.rest.js',
 						'bower_components/dabl/dist/scripts/dabl.adapter.rest.angular.js',
@@ -55,19 +55,12 @@ module.exports = function (grunt) {
 
 					]
 				}
-			},
-//			css: {
-//				files: {
-//					'dist/dabl-auth.css': [
-//						'css/**/*.css'
-//					]
-//				}
-//			}
+			}
 		},
 		uglify: {
 			depsJs: {
 				files: {
-					'dist/dabl-auth.min.js': 'dist/dabl-auth.js'
+					'dist/dabl-api.min.js': 'dist/dabl-api.js'
 				}
 			}
 		},

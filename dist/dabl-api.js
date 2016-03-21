@@ -4193,11 +4193,11 @@ dabl.RESTAdapter = RESTAdapter;
 }]);
 ;'use strict';
 
-angular.module('dablAuth', [
+angular.module('dabl-api', [
 	'dabl'
 ]);'use strict';
 
-angular.module('dablAuth')
+angular.module('dabl-api')
 
 .service('Auth', [
 	'$rootScope',
@@ -4291,29 +4291,27 @@ function (
 ]);
 ;'use strict';
 
-angular.module('dablAuth')
+angular.module('dabl-api')
 .factory('httpInterceptor', [
-	'API_HASH',
-	'API_SECRET',
+	'dablApiConfig',
 	'security',
 	'Auth',
 	'$q',
 	'$rootScope',
 function (
-	API_HASH,
-	API_SECRET,
+	dablApiConfig,
 	security,
 	Auth,
 	$q,
 	$rootScope
 ) {
 	function getAuthHeader(hmac) {
-		return 'dabl-auth-header' + API_HASH + ':' + hmac;
+		return dablApiConfig.headerName + dablApiConfig.hash + ':' + hmac;
 	}
 
 	function generateHeaders(endpoint) {
 		var date = (Date.now() / 1000) | 0;
-		var hmac = security.getHMAC(API_SECRET, [endpoint, date].join(','));
+		var hmac = security.getHMAC(dablApiConfig.secret, [endpoint, date].join(','));
 		var obj = {
 			'X-Timestamp': date,
 			'Authorization': getAuthHeader(hmac)
@@ -4340,7 +4338,7 @@ function (
 			return config;
 		},
 		responseError: function(rejection) {
-			$rootScope.$broadcast('dabl-auth.response.error', rejection);
+			$rootScope.$broadcast('dabl-api.response.error', rejection);
 			return $q.reject(rejection);
 		},
 		generateHeaders: generateHeaders
@@ -4348,7 +4346,7 @@ function (
 }]);
 ;'use strict';
 
-angular.module('dablAuth')
+angular.module('dabl-api')
 
 .factory('$localstorage', [
 	'$window',
@@ -4370,7 +4368,7 @@ function(
 }]);
 ;'use strict';
 /*global jsSHA: false */
-angular.module('dablAuth')
+angular.module('dabl-api')
 .factory('security', [
 	'jsSHA',
 function(
@@ -4408,15 +4406,15 @@ function(
 }]);
 ;'use strict';
 
-angular.module('dablAuth')
+angular.module('dabl-api')
 .factory('serverApi', [
 	'$q',
 	'$http',
-	'API_URL',
+	'dablApiConfig',
 function(
 	$q,
 	$http,
-	API_URL
+	dablApiConfig
 ){
 	var serverApi = {
 		makeRequest: function(endpoint, data, method, contentType) {
@@ -4429,7 +4427,7 @@ function(
 			var deferredAbort = $q.defer(),
 				options = {
 					method: method,
-					url: API_URL + '/' + endpoint,
+					url: dablApiConfig.baseUrl + '/' + endpoint,
 					data: data,
 					timeout: deferredAbort.promise
 				};
@@ -4502,12 +4500,12 @@ function(
 }]);
 ;'use strict';
 
-angular.module('dablAuth')
+angular.module('dabl-api')
 
 .factory('siteUrl', [
-	'API_URL',
+	'dablApiConfig',
 function(
-	API_URL
+	dablApiConfig
 ) {
 	var version = 16;
 
@@ -4516,7 +4514,7 @@ function(
 		url = url || '';
 
 		if (url.indexOf('http://') === -1 && url.indexOf('https://') === -1) {
-			url = API_URL + '/' + (url ? url : '');
+			url = dablApiConfig.baseUrl + '/' + (url ? url : '');
 		}
 
 		if (rev) {
@@ -4528,7 +4526,7 @@ function(
 }]);
 ;'use strict';
 
-angular.module('dablAuth')
+angular.module('dabl-api')
 .service('userApi', [
 	'security',
 	'serverApi',

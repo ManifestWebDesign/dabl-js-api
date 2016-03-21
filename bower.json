@@ -1,8 +1,8 @@
 {
-	"name": "dabl-auth",
+	"name": "dabl-api",
 	"version": "0.0.1",
 	"ignore": [],
-	"main": "dist/dabl-auth.min.js",
+	"main": "dist/dabl-api.min.js",
 	"devDependencies": {
 		"dabl": "package-unminified",
 		"angular": "~1.3.0",

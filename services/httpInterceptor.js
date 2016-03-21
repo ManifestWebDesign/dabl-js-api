@@ -1,28 +1,26 @@
 'use strict';
 
-angular.module('dablAuth')
+angular.module('dabl-api')
 .factory('httpInterceptor', [
-	'API_HASH',
-	'API_SECRET',
+	'dablApiConfig',
 	'security',
 	'Auth',
 	'$q',
 	'$rootScope',
 function (
-	API_HASH,
-	API_SECRET,
+	dablApiConfig,
 	security,
 	Auth,
 	$q,
 	$rootScope
 ) {
 	function getAuthHeader(hmac) {
-		return 'dabl-auth-header' + API_HASH + ':' + hmac;
+		return dablApiConfig.headerName + dablApiConfig.hash + ':' + hmac;
 	}
 
 	function generateHeaders(endpoint) {
 		var date = (Date.now() / 1000) | 0;
-		var hmac = security.getHMAC(API_SECRET, [endpoint, date].join(','));
+		var hmac = security.getHMAC(dablApiConfig.secret, [endpoint, date].join(','));
 		var obj = {
 			'X-Timestamp': date,
 			'Authorization': getAuthHeader(hmac)
@@ -49,7 +47,7 @@ function (
 			return config;
 		},
 		responseError: function(rejection) {
-			$rootScope.$broadcast('dabl-auth.response.error', rejection);
+			$rootScope.$broadcast('dabl-api.response.error', rejection);
 			return $q.reject(rejection);
 		},
 		generateHeaders: generateHeaders
