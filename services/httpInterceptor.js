@@ -8,18 +8,16 @@ angular.module('dablAuth')
 	'Auth',
 	'$q',
 	'$rootScope',
-	'dablAuthConfig',
 function (
 	API_HASH,
 	API_SECRET,
 	security,
 	Auth,
 	$q,
-	$rootScope,
-	dablAuthConfig
+	$rootScope
 ) {
 	function getAuthHeader(hmac) {
-		return dablAuthConfig.header + API_HASH + ':' + hmac;
+		return 'dabl-auth-header' + API_HASH + ':' + hmac;
 	}
 
 	function generateHeaders(endpoint) {
