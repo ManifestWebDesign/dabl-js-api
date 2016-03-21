@@ -1,0 +1,10 @@
+{
+	"name": "hoffman-photo-shared",
+	"version": "0.0.1",
+	"devDependencies": {
+		"dabl": "package-unminified",
+		"angular": "~1.3.0",
+		"angular-mocks": "~1.3.0",
+		"jsSHA": "~2.0.2"
+	}
+}
