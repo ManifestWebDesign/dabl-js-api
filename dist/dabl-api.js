@@ -4193,11 +4193,11 @@ dabl.RESTAdapter = RESTAdapter;
 }]);
 ;'use strict';
 
-angular.module('dabl-api', [
+angular.module('dablApi', [
 	'dabl'
 ]);'use strict';
 
-angular.module('dabl-api')
+angular.module('dablApi')
 
 .service('Auth', [
 	'$rootScope',
@@ -4291,7 +4291,7 @@ function (
 ]);
 ;'use strict';
 
-angular.module('dabl-api')
+angular.module('dablApi')
 .factory('httpInterceptor', [
 	'dablApiConfig',
 	'security',
@@ -4338,7 +4338,7 @@ function (
 			return config;
 		},
 		responseError: function(rejection) {
-			$rootScope.$broadcast('dabl-api.response.error', rejection);
+			$rootScope.$broadcast('dablApi.response.error', rejection);
 			return $q.reject(rejection);
 		},
 		generateHeaders: generateHeaders
@@ -4346,7 +4346,7 @@ function (
 }]);
 ;'use strict';
 
-angular.module('dabl-api')
+angular.module('dablApi')
 
 .factory('$localstorage', [
 	'$window',
@@ -4368,7 +4368,7 @@ function(
 }]);
 ;'use strict';
 /*global jsSHA: false */
-angular.module('dabl-api')
+angular.module('dablApi')
 .factory('security', [
 	'jsSHA',
 function(
@@ -4406,7 +4406,7 @@ function(
 }]);
 ;'use strict';
 
-angular.module('dabl-api')
+angular.module('dablApi')
 .factory('serverApi', [
 	'$q',
 	'$http',
@@ -4500,7 +4500,7 @@ function(
 }]);
 ;'use strict';
 
-angular.module('dabl-api')
+angular.module('dablApi')
 
 .factory('siteUrl', [
 	'dablApiConfig',
@@ -4526,7 +4526,7 @@ function(
 }]);
 ;'use strict';
 
-angular.module('dabl-api')
+angular.module('dablApi')
 .service('userApi', [
 	'security',
 	'serverApi',

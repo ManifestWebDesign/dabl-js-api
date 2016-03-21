@@ -1,6 +1,6 @@
 'use strict';
 /*global jsSHA: false */
-angular.module('dabl-api')
+angular.module('dablApi')
 .factory('security', [
 	'jsSHA',
 function(

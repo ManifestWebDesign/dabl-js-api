@@ -1,5 +1,5 @@
 'use strict';
 
-angular.module('dabl-api', [
+angular.module('dablApi', [
 	'dabl'
 ])

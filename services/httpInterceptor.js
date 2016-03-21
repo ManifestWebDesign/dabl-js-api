@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('dabl-api')
+angular.module('dablApi')
 .factory('httpInterceptor', [
 	'dablApiConfig',
 	'security',
@@ -47,7 +47,7 @@ function (
 			return config;
 		},
 		responseError: function(rejection) {
-			$rootScope.$broadcast('dabl-api.response.error', rejection);
+			$rootScope.$broadcast('dablApi.response.error', rejection);
 			return $q.reject(rejection);
 		},
 		generateHeaders: generateHeaders
