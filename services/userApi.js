@@ -1,12 +1,12 @@
 'use strict';
 
 angular.module('dablApi')
-.service('userApi', [
-	'security',
-	'serverApi',
+.service('dablUserApi', [
+	'dablSecurity',
+	'dablServerApi',
 function(
-	security,
-	serverApi
+	dablSecurity,
+	dablServerApi
 ){
 	var obj = {},
 		url = 'users';
@@ -14,13 +14,13 @@ function(
 	obj.signIn = function(username, password) {
 		var endpoint = url + '/login',
 			contentType = 'application/x-www-form-urlencoded',
-			data = 'credentials=' + security.encode64([username, password].join(':'));
-		return serverApi.makeRequest(endpoint, data, 'post', contentType);
+			data = 'credentials=' + dablSecurity.encode64([username, password].join(':'));
+		return dablServerApi.makeRequest(endpoint, data, 'post', contentType);
 	};
 
 	obj.signOut = function() {
 		var endpoint = url + '/login/logout';
-		return serverApi.makeRequest(endpoint, null, 'get');
+		return dablServerApi.makeRequest(endpoint, null, 'get');
 	};
 
 	return obj;

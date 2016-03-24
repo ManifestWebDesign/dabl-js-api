@@ -51,8 +51,8 @@ module.exports = function (grunt) {
 						'bower_components/dabl/dist/scripts/dabl.adapter.rest.js',
 						'bower_components/dabl/dist/scripts/dabl.adapter.rest.angular.js',
 						'main.js',
-						'services/*.js'
-
+						'services/*.js',
+						'models/Model.js'
 					]
 				}
 			}

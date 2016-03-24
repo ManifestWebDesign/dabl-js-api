@@ -2,7 +2,7 @@
 
 angular.module('dablApi')
 
-.factory('siteUrl', [
+.factory('dablSiteUrl', [
 	'dablApiConfig',
 function(
 	dablApiConfig

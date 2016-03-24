@@ -2,7 +2,7 @@
 
 angular.module('dablApi')
 
-.service('Auth', [
+.service('dablAuth', [
 	'$rootScope',
 	'$localstorage',
 function (

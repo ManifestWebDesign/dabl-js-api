@@ -1,16 +1,16 @@
 'use strict';
 
 angular.module('dablApi')
-.factory('httpInterceptor', [
+.factory('dablHttpInterceptor', [
 	'dablApiConfig',
-	'security',
-	'Auth',
+	'dablSecurity',
+	'dablAuth',
 	'$q',
 	'$rootScope',
 function (
 	dablApiConfig,
-	security,
-	Auth,
+	dablSecurity,
+	dablAuth,
 	$q,
 	$rootScope
 ) {
@@ -20,14 +20,14 @@ function (
 
 	function generateHeaders(endpoint) {
 		var date = (Date.now() / 1000) | 0;
-		var hmac = security.getHMAC(dablApiConfig.secret, [endpoint, date].join(','));
+		var hmac = dablSecurity.getHMAC(dablApiConfig.secret, [endpoint, date].join(','));
 		var obj = {
 			'X-Timestamp': date,
 			'Authorization': getAuthHeader(hmac)
 		};
-		if (Auth.isLoggedIn()) {
-			obj['X-Email'] = Auth.getUser()['email'];
-			obj['X-User-Token'] = Auth.getUser()['authToken'];
+		if (dablAuth.isLoggedIn()) {
+			obj['X-Email'] = dablAuth.getUser()['email'];
+			obj['X-User-Token'] = dablAuth.getUser()['authToken'];
 		}
 		return obj;
 	}

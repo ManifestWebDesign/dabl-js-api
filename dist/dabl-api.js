@@ -4199,7 +4199,7 @@ angular.module('dablApi', [
 
 angular.module('dablApi')
 
-.service('Auth', [
+.service('dablAuth', [
 	'$rootScope',
 	'$localstorage',
 function (
@@ -4292,16 +4292,16 @@ function (
 ;'use strict';
 
 angular.module('dablApi')
-.factory('httpInterceptor', [
+.factory('dablHttpInterceptor', [
 	'dablApiConfig',
-	'security',
-	'Auth',
+	'dablSecurity',
+	'dablAuth',
 	'$q',
 	'$rootScope',
 function (
 	dablApiConfig,
-	security,
-	Auth,
+	dablSecurity,
+	dablAuth,
 	$q,
 	$rootScope
 ) {
@@ -4311,14 +4311,14 @@ function (
 
 	function generateHeaders(endpoint) {
 		var date = (Date.now() / 1000) | 0;
-		var hmac = security.getHMAC(dablApiConfig.secret, [endpoint, date].join(','));
+		var hmac = dablSecurity.getHMAC(dablApiConfig.secret, [endpoint, date].join(','));
 		var obj = {
 			'X-Timestamp': date,
 			'Authorization': getAuthHeader(hmac)
 		};
-		if (Auth.isLoggedIn()) {
-			obj['X-Email'] = Auth.getUser()['email'];
-			obj['X-User-Token'] = Auth.getUser()['authToken'];
+		if (dablAuth.isLoggedIn()) {
+			obj['X-Email'] = dablAuth.getUser()['email'];
+			obj['X-User-Token'] = dablAuth.getUser()['authToken'];
 		}
 		return obj;
 	}
@@ -4369,7 +4369,7 @@ function(
 ;'use strict';
 /*global jsSHA: false */
 angular.module('dablApi')
-.factory('security', [
+.factory('dablSecurity', [
 	'jsSHA',
 function(
 	jsSHA
@@ -4407,7 +4407,7 @@ function(
 ;'use strict';
 
 angular.module('dablApi')
-.factory('serverApi', [
+.factory('dablServerApi', [
 	'$q',
 	'$http',
 	'dablApiConfig',
@@ -4502,7 +4502,7 @@ function(
 
 angular.module('dablApi')
 
-.factory('siteUrl', [
+.factory('dablSiteUrl', [
 	'dablApiConfig',
 function(
 	dablApiConfig
@@ -4527,12 +4527,12 @@ function(
 ;'use strict';
 
 angular.module('dablApi')
-.service('userApi', [
-	'security',
-	'serverApi',
+.service('dablUserApi', [
+	'dablSecurity',
+	'dablServerApi',
 function(
-	security,
-	serverApi
+	dablSecurity,
+	dablServerApi
 ){
 	var obj = {},
 		url = 'users';
@@ -4540,14 +4540,32 @@ function(
 	obj.signIn = function(username, password) {
 		var endpoint = url + '/login',
 			contentType = 'application/x-www-form-urlencoded',
-			data = 'credentials=' + security.encode64([username, password].join(':'));
-		return serverApi.makeRequest(endpoint, data, 'post', contentType);
+			data = 'credentials=' + dablSecurity.encode64([username, password].join(':'));
+		return dablServerApi.makeRequest(endpoint, data, 'post', contentType);
 	};
 
 	obj.signOut = function() {
 		var endpoint = url + '/login/logout';
-		return serverApi.makeRequest(endpoint, null, 'get');
+		return dablServerApi.makeRequest(endpoint, null, 'get');
 	};
 
 	return obj;
 }]);
+;'use strict';
+
+angular.module('dablApi')
+
+.factory('dablModel', [
+	'dabl',
+	'dablApiConfig',
+	function(
+		dabl,
+		dablApiConfig
+	) {
+		var adapter = new dabl.AngularRESTAdapter(dablApiConfig.baseUrl + '/');
+		return dabl.Model.extend('model', {
+			adapter: adapter,
+			fields: {}
+		});
+	}
+]);

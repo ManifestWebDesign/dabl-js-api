@@ -2,7 +2,7 @@
 
 angular.module('dablApi')
 
-.factory('Model', [
+.factory('dablModel', [
 	'dabl',
 	'dablApiConfig',
 	function(
