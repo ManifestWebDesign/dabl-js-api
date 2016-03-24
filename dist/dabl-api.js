@@ -4268,7 +4268,7 @@ function (
 		};
 
 		obj.getToken = function () {
-			if (loggedInUser && typeof loggedInUser.authentication_token !== 'undefined') {
+			if (loggedInUser && typeof loggedInUser.authToken !== 'undefined') {
 				return loggedInUser.authToken;
 			}
 			return null;
