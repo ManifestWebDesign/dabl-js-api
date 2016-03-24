@@ -14,7 +14,7 @@ function(
 	obj.signIn = function(username, password) {
 		var endpoint = url + '/login',
 			contentType = 'application/x-www-form-urlencoded',
-			data = 'credentials=' + dablSecurity.encode64([username, password].join(':'));
+			data = 'credentials=' + [dablSecurity.encode64(username), dablSecurity.encode64(password)].join(':');
 		return dablServerApi.makeRequest(endpoint, data, 'post', contentType);
 	};
 
