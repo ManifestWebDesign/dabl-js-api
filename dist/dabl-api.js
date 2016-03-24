@@ -4348,6 +4348,16 @@ function (
 
 angular.module('dablApi')
 
+.service('jsSHA', function() {
+	if (typeof jsSHA === 'undefined') {
+		throw new Error('jsSHA is not included');
+	}
+
+	return jsSHA;
+});;'use strict';
+
+angular.module('dablApi')
+
 .factory('$localstorage', [
 	'$window',
 function(
@@ -4375,10 +4385,6 @@ function(
 	jsSHA
 ){
 	var obj = {};
-
-	if (typeof jsSHA === 'undefined') {
-		throw new Error('jsSHA is not included');
-	}
 
 	obj.getHMAC = function(skey, content){
 		var hasher = new jsSHA('SHA-512', 'TEXT');

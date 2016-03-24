@@ -8,10 +8,6 @@ function(
 ){
 	var obj = {};
 
-	if (typeof jsSHA === 'undefined') {
-		throw new Error('jsSHA is not included');
-	}
-
 	obj.getHMAC = function(skey, content){
 		var hasher = new jsSHA('SHA-512', 'TEXT');
 		hasher.setHMACKey(skey, 'TEXT');
