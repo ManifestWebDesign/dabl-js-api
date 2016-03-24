@@ -50,6 +50,7 @@ module.exports = function (grunt) {
 						'bower_components/dabl/dist/scripts/dabl.js',
 						'bower_components/dabl/dist/scripts/dabl.adapter.rest.js',
 						'bower_components/dabl/dist/scripts/dabl.adapter.rest.angular.js',
+						'bower_components/jsSHA/src/sha.js',
 						'main.js',
 						'services/*.js',
 						'models/Model.js'
