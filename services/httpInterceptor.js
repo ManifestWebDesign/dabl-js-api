@@ -15,7 +15,7 @@ function (
 	$rootScope
 ) {
 	function getAuthHeader(hmac) {
-		return dablApiConfig.headerName + dablApiConfig.hash + ':' + hmac;
+		return dablApiConfig.headerName + ' ' + dablApiConfig.hash + ':' + hmac;
 	}
 
 	function generateHeaders(endpoint) {
