@@ -1,6 +1,7 @@
 'use strict';
 
 angular.module('dablApi')
+
 .factory('dablServerApi', [
 	'$q',
 	'$http',

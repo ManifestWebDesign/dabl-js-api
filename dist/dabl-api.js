@@ -4239,11 +4239,17 @@ angular.module('dablApi')
 .service('dablAuth', [
 	'$rootScope',
 	'$localstorage',
+	'dablServerApi',
+	'dablSecurity',
 function (
 	$rootScope,
-	$localstorage
+	$localstorage,
+	dablServerApi,
+	dablSecurity
 ) {
-		var obj = {}, loggedInUser = null;
+		var obj = {},
+			loggedInUser = null,
+			url = 'users';
 
 		obj.setLoggedInUser = function (user) {
 			loggedInUser = user;
@@ -4320,7 +4326,19 @@ function (
 
 		obj.passwordIsValid = function(password) {
 			return (password.length >= 8 && password.match(/[A-Z]+/) && password.match(/[a-z]+/) && password.match(/[0-9]+/));
-		}
+		};
+
+		obj.signIn = function(username, password) {
+			var endpoint = url + '/login',
+				contentType = 'application/x-www-form-urlencoded',
+				data = 'credentials=' + [dablSecurity.encode64(username), dablSecurity.encode64(password)].join(':');
+			return dablServerApi.makeRequest(endpoint, data, 'post', contentType);
+		};
+
+		obj.signOut = function() {
+			var endpoint = url + '/logout';
+			return dablServerApi.makeRequest(endpoint, null, 'post');
+		};
 
 		var u = $localstorage.get('user');
 		if (u) {
@@ -4454,6 +4472,7 @@ function(
 ;'use strict';
 
 angular.module('dablApi')
+
 .factory('dablServerApi', [
 	'$q',
 	'$http',
@@ -4570,33 +4589,6 @@ function(
 
 		return url;
 	};
-}]);
-;'use strict';
-
-angular.module('dablApi')
-.service('dablUserApi', [
-	'dablSecurity',
-	'dablServerApi',
-function(
-	dablSecurity,
-	dablServerApi
-){
-	var obj = {},
-		url = 'users';
-
-	obj.signIn = function(username, password) {
-		var endpoint = url + '/login',
-			contentType = 'application/x-www-form-urlencoded',
-			data = 'credentials=' + [dablSecurity.encode64(username), dablSecurity.encode64(password)].join(':');
-		return dablServerApi.makeRequest(endpoint, data, 'post', contentType);
-	};
-
-	obj.signOut = function() {
-		var endpoint = url + '/login/logout';
-		return dablServerApi.makeRequest(endpoint, null, 'get');
-	};
-
-	return obj;
 }]);
 ;'use strict';
 
