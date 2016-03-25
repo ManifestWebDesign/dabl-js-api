@@ -5,17 +5,11 @@ angular.module('dablApi')
 .service('dablAuth', [
 	'$rootScope',
 	'$localstorage',
-	'dablServerApi',
-	'dablSecurity',
 function (
 	$rootScope,
-	$localstorage,
-	dablServerApi,
-	dablSecurity
+	$localstorage
 ) {
-		var obj = {},
-			loggedInUser = null,
-			url = 'users';
+		var obj = {}, loggedInUser = null;
 
 		obj.setLoggedInUser = function (user) {
 			loggedInUser = user;
@@ -24,6 +18,14 @@ function (
 		obj.setUser = function (user) {
 			var olduser = loggedInUser;
 			obj.setLoggedInUser(user);
+
+			if (olduser === null && user && user.id) {
+				$rootScope.$broadcast('dabl-auth.user.logged-in');
+
+			} else if (user === null) {
+				$rootScope.$broadcast('dabl-auth.user.logged-out');
+			}
+
 			$localstorage.set('user', user);
 		};
 
@@ -84,32 +86,7 @@ function (
 
 		obj.passwordIsValid = function(password) {
 			return (password.length >= 8 && password.match(/[A-Z]+/) && password.match(/[a-z]+/) && password.match(/[0-9]+/));
-		};
-
-		obj.signIn = function(username, password) {
-			var endpoint = url + '/login',
-				contentType = 'application/x-www-form-urlencoded',
-				data = 'credentials=' + [dablSecurity.encode64(username), dablSecurity.encode64(password)].join(':'),
-				that = this;
-
-			return dablServerApi.makeRequest(endpoint, data, 'post', contentType).then(function(r) {
-				that.setUser(r);
-			}).finally(function(r) {
-				$rootScope.$broadcast('dabl-auth.user.logged-in', {reply: r});
-			});
-		};
-
-		obj.signOut = function() {
-
-			var endpoint = url + '/logout',
-				that = this;
-
-			return dablServerApi.makeRequest(endpoint, null, 'post').then(function(r) {
-				that.setUser(null);
-			}).finally(function(r) {
-				$rootScope.$broadcast('dabl-auth.user.logged-out', {reply: r});
-			});
-		};
+		}
 
 		var u = $localstorage.get('user');
 		if (u) {
