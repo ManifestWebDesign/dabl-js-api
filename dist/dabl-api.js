@@ -4274,17 +4274,21 @@ function (
 			return null;
 		};
 
-		obj.getEmail = function () {
-			if (loggedInUser && typeof loggedInUser.email !== 'undefined') {
-				return loggedInUser.email;
+		obj.getUsername = function () {
+			if (loggedInUser && typeof loggedInUser.username !== 'undefined') {
+				return loggedInUser.username;
 			}
 			return null;
+		};
+
+		obj.getEmail = function() {
+			return obj.getUsername();
 		};
 
 		obj.isLoggedIn = function () {
 			return (
 				loggedInUser &&
-				typeof loggedInUser.email !== 'undefined' &&
+				typeof loggedInUser.username !== 'undefined' &&
 				typeof loggedInUser.authToken !== 'undefined'
 			);
 		};
