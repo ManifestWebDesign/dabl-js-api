@@ -4594,7 +4594,7 @@ function(
 
 	obj.signOut = function() {
 		var endpoint = url + '/logout';
-		return dablServerApi.makeRequest(endpoint, null, 'get');
+		return dablServerApi.makeRequest(endpoint, null, 'post');
 	};
 
 	return obj;
