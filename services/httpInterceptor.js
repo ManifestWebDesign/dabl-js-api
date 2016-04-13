@@ -26,7 +26,7 @@ function (
 			'Authorization': getAuthHeader(hmac)
 		};
 		if (dablAuth.isLoggedIn()) {
-			obj['X-Email'] = dablAuth.getUser()['email'];
+			obj['X-Username'] = dablAuth.getUser()['username'];
 			obj['X-User-Token'] = dablAuth.getUser()['authToken'];
 		}
 		return obj;
