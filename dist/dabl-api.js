@@ -4613,7 +4613,10 @@ angular.module('dablApi')
 		var adapter = new dabl.AngularRESTAdapter(dablApiConfig.baseUrl + '/');
 		return dabl.Model.extend('model', {
 			adapter: adapter,
-			fields: {}
+			fields: {
+				created: Date,
+				updated: Date
+			}
 		});
 	}
 ]);
