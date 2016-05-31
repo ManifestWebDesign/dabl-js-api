@@ -4191,3 +4191,354 @@ dabl.RESTAdapter = RESTAdapter;
 	return dabl;
 
 }]);
+;'use strict';
+
+angular.module('dablJs.api', [
+	'dabl',
+	'dablJs.security'
+]);'use strict';
+
+angular.module('dablJs.api')
+
+.service('dablAuth', [
+	'$rootScope',
+	'$localstorage',
+function (
+	$rootScope,
+	$localstorage
+) {
+		var obj = {}, loggedInUser = null;
+
+		obj.setLoggedInUser = function (user) {
+			loggedInUser = user;
+		};
+
+		obj.setUser = function (user) {
+			var olduser = loggedInUser;
+			obj.setLoggedInUser(user);
+
+			if (olduser === null && user && user.id) {
+				$rootScope.$broadcast('dabl-auth.user.logged-in');
+
+			} else if (user === null) {
+				$rootScope.$broadcast('dabl-auth.user.logged-out');
+			}
+
+			$localstorage.set('user', user);
+		};
+
+		obj.getUser = function () {
+			return loggedInUser;
+		};
+
+		obj.getToken = function () {
+			if (loggedInUser && typeof loggedInUser.authToken !== 'undefined') {
+				return loggedInUser.authToken;
+			}
+			return null;
+		};
+
+		obj.getUsername = function () {
+			if (loggedInUser && typeof loggedInUser.username !== 'undefined') {
+				return loggedInUser.username;
+			}
+			return null;
+		};
+
+		obj.getEmail = function() {
+			return obj.getUsername();
+		};
+
+		obj.isLoggedIn = function () {
+			return (
+				loggedInUser &&
+				typeof loggedInUser.username !== 'undefined' &&
+				typeof loggedInUser.authToken !== 'undefined'
+			);
+		};
+
+		obj.checkAuthorization = function (toState) {
+			return !((
+					typeof toState === 'undefined' ||
+					typeof toState.data === 'undefined' ||
+					typeof toState.data.bypassAuth === 'undefined' ||
+					!toState.data.bypassAuth
+				) &&
+				!obj.isLoggedIn()
+			);
+		};
+
+		obj.globalAdminIsLoggedIn = function () {
+			var user = obj.getUser();
+			return user && user.type === 1;
+		};
+
+		obj.projectManagerIsLoggedIn = function () {
+			var user = obj.getUser();
+			return user && user.type === 2;
+		};
+
+		obj.reset = function() {
+			obj.setUser(null);
+		};
+
+		obj.passwordIsValid = function(password) {
+			return (password.length >= 8 && password.match(/[A-Z]+/) && password.match(/[a-z]+/) && password.match(/[0-9]+/));
+		}
+
+		var u = $localstorage.get('user');
+		if (u) {
+			obj.setUser(u);
+		}
+
+		return obj;
+	}
+]);
+;'use strict';
+
+angular.module('dablJs.api')
+
+.factory('dablHttpInterceptor', [
+	'dablApiConfig',
+	'dablSecurity',
+	'dablAuth',
+	'$q',
+	'$rootScope',
+function (
+	dablApiConfig,
+	dablSecurity,
+	dablAuth,
+	$q,
+	$rootScope
+) {
+	function getAuthHeader(hmac) {
+		return dablApiConfig.headerName + ' ' + dablApiConfig.hash + ':' + hmac;
+	}
+
+	function generateHeaders(endpoint) {
+		var date = (Date.now() / 1000) | 0;
+		var hmac = dablSecurity.getHMAC(dablApiConfig.secret, [endpoint, date].join(','));
+		var obj = {
+			'X-Timestamp': date,
+			'Authorization': getAuthHeader(hmac)
+		};
+		if (dablAuth.isLoggedIn()) {
+			obj['X-Username'] = dablAuth.getUser()['username'];
+			obj['X-User-Token'] = dablAuth.getUser()['authToken'];
+		}
+		return obj;
+	}
+
+	return {
+		request: function (config) {
+			var headers = generateHeaders(config.url);
+
+			if (typeof config['headers']['X-Timestamp'] !== 'undefined') {
+				return config;
+			}
+
+			for(var header in headers) {
+				config['headers'][header] = headers[header];
+			}
+
+			return config;
+		},
+		responseError: function(rejection) {
+			$rootScope.$broadcast('dablApi.response.error', rejection);
+			return $q.reject(rejection);
+		},
+		generateHeaders: generateHeaders
+	};
+}]);
+;'use strict';
+
+angular.module('dablJs.api')
+
+.factory('$localstorage', [
+	'$window',
+function(
+	$window
+){
+	return {
+		get: function (key, defaultValue) {
+			var val = $window.localStorage[key];
+			return val ? JSON.parse(val) : defaultValue;
+		},
+		set: function (key, value) {
+			$window.localStorage[key] = JSON.stringify(value);
+		},
+		remove: function(key) {
+			return delete $window.localStorage[key];
+		}
+	};
+}]);
+;'use strict';
+
+angular.module('dablJs.api')
+
+.factory('dablServerApi', [
+	'$q',
+	'$http',
+	'dablApiConfig',
+function(
+	$q,
+	$http,
+	dablApiConfig
+){
+	var serverApi = {
+		makeRequest: function(endpoint, data, method, contentType) {
+			data = data || '';
+			method = method ? method.toUpperCase() : (data === '' ? 'GET' : 'POST');
+			if (endpoint.charAt(0) === '/') {
+				endpoint = endpoint.substring(1);
+			}
+
+			var deferredAbort = $q.defer(),
+				options = {
+					method: method,
+					url: dablApiConfig.baseUrl + '/' + endpoint,
+					data: data,
+					timeout: deferredAbort.promise
+				};
+
+			if (typeof contentType !== 'undefined') {
+				options['headers'] = {'Content-Type': contentType};
+			}
+
+			//console.log('making request: ', JSON.stringify(options));
+
+			var promise = $http(options).then(function(r){
+				return r.data;
+			}, function(e){
+				return $q.reject(e);
+			});
+
+			promise.abort = function() {
+				deferredAbort.resolve();
+			};
+
+			promise.finally(function(){
+				promise.abort = angular.noop;
+				deferredAbort = promise = null;
+			});
+			return promise;
+		},
+		serialize: function (obj, prefix) {
+			//Method from http://stackoverflow.com/questions/1714786/querystring-encoding-of-a-javascript-object
+			var str = [];
+			for (var p in obj) {
+				if (obj.hasOwnProperty(p)) {
+					var k = prefix ? prefix + '[' + p + ']' : p, v = obj[p];
+					str.push(typeof v === 'object' ?
+						serverApi.serialize(v, k) :
+						encodeURIComponent(k) + '=' + encodeURIComponent(v));
+				}
+			}
+			return str.join('&');
+		},
+		unserialize: function (query) {
+			var result = {};
+			var spl = query.split('&');
+			angular.forEach(spl, function(val) {
+				if (val.length < 1) {
+					return;
+				}
+				var sides = val.split('=');
+				if (sides[0].indexOf('[') !== -1) {
+					var start = sides[0].indexOf('[');
+					var end = sides[0].indexOf(']');
+					var key;
+					var idx;
+					++start;
+					end = end - start;
+					idx = sides[0].substr(0, start - 1);
+					key = sides[0].substr(start, end);
+					if (typeof result[idx] === 'undefined') {
+						result[idx] = {};
+					}
+					result[idx][key] = sides[1];
+				} else {
+					result[decodeURIComponent(sides[0])] = decodeURIComponent(sides[1]);
+				}
+			});
+			return result;
+		}
+	};
+
+	return serverApi;
+}]);
+;'use strict';
+
+angular.module('dablJs.api')
+
+.factory('dablSiteUrl', [
+	'dablApiConfig',
+function(
+	dablApiConfig
+) {
+	var version = 16;
+
+	return function(url, rev){
+
+		url = url || '';
+
+		if (url.indexOf('http://') === -1 && url.indexOf('https://') === -1) {
+			url = dablApiConfig.baseUrl + '/' + (url ? url : '');
+		}
+
+		if (rev) {
+			url += '?v=' + version;
+		}
+
+		return url;
+	};
+}]);
+;'use strict';
+
+angular.module('dablJs.api')
+
+.service('dablUserApi', [
+	'dablSecurity',
+	'dablServerApi',
+function(
+	dablSecurity,
+	dablServerApi
+){
+	var obj = {},
+		url = 'users';
+
+	obj.signIn = function(username, password) {
+		var endpoint = url + '/login',
+			contentType = 'application/x-www-form-urlencoded',
+			data = 'credentials=' + [dablSecurity.encode64(username), dablSecurity.encode64(password)].join(':');
+		return dablServerApi.makeRequest(endpoint, data, 'post', contentType);
+	};
+
+	obj.signOut = function() {
+		var endpoint = url + '/logout';
+		return dablServerApi.makeRequest(endpoint, null, 'post');
+	};
+
+	return obj;
+}]);
+;'use strict';
+
+angular.module('dablJs.api')
+
+.factory('dablModel', [
+	'dabl',
+	'dablApiConfig',
+	function(
+		dabl,
+		dablApiConfig
+	) {
+		var adapter = new dabl.AngularRESTAdapter(dablApiConfig.baseUrl + '/');
+		return dabl.Model.extend('model', {
+			adapter: adapter,
+			fields: {
+				created: Date,
+				updated: Date
+			}
+		});
+	}
+]);

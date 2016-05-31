@@ -28,7 +28,7 @@ module.exports = function (grunt) {
 			all: {
 				src: [
 					'Gruntfile.js',
-					'<%yeoman.app%>/**/*.js'
+					'<% yeoman.app %>/**/*.js'
 				]
 			}
 		},
@@ -45,10 +45,10 @@ module.exports = function (grunt) {
 						'bower_components/dabl/dist/scripts/dabl.js',
 						'bower_components/dabl/dist/scripts/dabl.adapter.rest.js',
 						'bower_components/dabl/dist/scripts/dabl.adapter.rest.angular.js',
-						'bower_components/jsSHA/src/sha.js',
-						'<%yeoman.app%>/main.js',
-						'<%yeoman.app%>/services/*.js',
-						'<%yeoman.app%>/models/Model.js'
+						'bower_components/dabl-js-security/dist/dist/dabl-js.security.js',
+						'src/main.js',
+						'src/services/*.js',
+						'src/models/Model.js'
 					]
 				}
 			}
