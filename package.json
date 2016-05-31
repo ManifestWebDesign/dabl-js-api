@@ -1,7 +1,7 @@
 {
-  "name": "dabl-auth",
+  "name": "dabl-js-api",
   "version": "0.0.1",
-  "description": "Shared DABL Resources",
+  "description": "Client for communicating with DABL backend (https://bitbucket.org/manifestwebdesign/dabl-api)",
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-autoprefixer": "~0.4.0",
@@ -29,5 +29,5 @@
   "scripts": {
     "test": "grunt test"
   },
-  "main": "./dist/dabl-auth.min.js"
+  "main": "./dist/dabl-js.api.min.js"
 }

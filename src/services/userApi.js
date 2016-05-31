@@ -1,6 +1,7 @@
 'use strict';
 
-angular.module('dablApi')
+angular.module('dablJs.api')
+
 .service('dablUserApi', [
 	'dablSecurity',
 	'dablServerApi',

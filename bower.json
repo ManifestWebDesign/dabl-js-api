@@ -1,12 +1,12 @@
 {
-	"name": "dabl-api",
+	"name": "dablJs.api",
 	"version": "0.0.1",
 	"ignore": [],
-	"main": "dist/dabl-api.js",
+	"main": "dist/dabl-js.api.js",
 	"devDependencies": {
 		"dabl": "package-unminified",
+		"dabl-js-security": "ssh://git@bitbucket.org/manifestwebdesign/dabl-js-security.git#latest",
 		"angular": "~1.3.0",
-		"angular-mocks": "~1.3.0",
-		"jsSHA": "~2.0.2"
+		"angular-mocks": "~1.3.0"
 	}
 }

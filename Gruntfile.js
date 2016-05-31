@@ -10,14 +10,9 @@ module.exports = function (grunt) {
 	// Project configuration.
 	// configurable paths
 	var yeomanConfig = {
-		app: 'app',
+		app: 'src',
 		dist: 'dist'
 	};
-
-	try {
-		yeomanConfig.app = require('./bower.json').appPath || yeomanConfig.app;
-	} catch (e) {
-	}
 
 	grunt.initConfig({
 		yeoman: yeomanConfig,
@@ -33,7 +28,7 @@ module.exports = function (grunt) {
 			all: {
 				src: [
 					'Gruntfile.js',
-					'js/**/*.js'
+					'<%yeoman.app%>/**/*.js'
 				]
 			}
 		},
@@ -46,14 +41,14 @@ module.exports = function (grunt) {
 			},
 			depsJs: {
 				files: {
-					'dist/dabl-api.js': [
+					'dist/dabl-js.api.js': [
 						'bower_components/dabl/dist/scripts/dabl.js',
 						'bower_components/dabl/dist/scripts/dabl.adapter.rest.js',
 						'bower_components/dabl/dist/scripts/dabl.adapter.rest.angular.js',
 						'bower_components/jsSHA/src/sha.js',
-						'main.js',
-						'services/*.js',
-						'models/Model.js'
+						'<%yeoman.app%>/main.js',
+						'<%yeoman.app%>/services/*.js',
+						'<%yeoman.app%>/models/Model.js'
 					]
 				}
 			}
@@ -61,30 +56,17 @@ module.exports = function (grunt) {
 		uglify: {
 			depsJs: {
 				files: {
-					'dist/dabl-api.min.js': 'dist/dabl-api.js'
+					'dist/dabl-js.api.min.js': 'dist/dabl-js.api.js'
 				}
-			}
-		},
-		copy: {
-			main: {
-				files: [
-					{
-						src: 'css/fonts/*',
-						dest: 'dist/fonts',
-						expand: true,
-						flatten: true
-					}
-				]
 			}
 		}
 	});
 
 	// Default task to be run.
-	grunt.registerTask('default', [
+	grunt.registerTask('build', [
 		'clean',
 		'concat',
-		'uglify',
-		'copy'
+		'uglify'
 	]);
 
 	grunt.registerTask('hint', [

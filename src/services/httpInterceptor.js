@@ -1,6 +1,7 @@
 'use strict';
 
-angular.module('dablApi')
+angular.module('dablJs.api')
+
 .factory('dablHttpInterceptor', [
 	'dablApiConfig',
 	'dablSecurity',

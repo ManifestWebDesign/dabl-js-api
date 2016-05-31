@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('dablApi')
+angular.module('dablJs.api')
 
 .factory('dablSiteUrl', [
 	'dablApiConfig',
