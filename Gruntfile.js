@@ -7,15 +7,8 @@ module.exports = function (grunt) {
 	// Load npm plugins to provide necessary tasks.
 	require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
-	// Project configuration.
-	// configurable paths
-	var yeomanConfig = {
-		app: 'src',
-		dist: 'dist'
-	};
 
 	grunt.initConfig({
-		yeoman: yeomanConfig,
 		// Make sure code styles are up to par and there are no obvious mistakes
 		jshint: {
 			options: {
@@ -28,7 +21,7 @@ module.exports = function (grunt) {
 			all: {
 				src: [
 					'Gruntfile.js',
-					'<% yeoman.app %>/**/*.js'
+					'src/**/*.js'
 				]
 			}
 		},
@@ -45,7 +38,7 @@ module.exports = function (grunt) {
 						'bower_components/dabl/dist/scripts/dabl.js',
 						'bower_components/dabl/dist/scripts/dabl.adapter.rest.js',
 						'bower_components/dabl/dist/scripts/dabl.adapter.rest.angular.js',
-						'bower_components/dabl-js-security/dist/dist/dabl-js.security.js',
+						'bower_components/dabl-js-security/dist/dabl-js.security.js',
 						'src/main.js',
 						'src/services/*.js',
 						'src/models/Model.js'
