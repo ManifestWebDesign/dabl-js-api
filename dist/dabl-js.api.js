@@ -3695,9 +3695,9 @@ Route.prototype = {
 			val = typeof params[urlParam] !== 'undefined' || params.hasOwnProperty(urlParam) ? params[urlParam] : self.defaults[urlParam];
 			if (typeof val !== 'undefined' && val !== null) {
 				encodedVal = encodeUriSegment(val);
-				url = url.replace(new RegExp(":" + urlParam + "(\\W)", "g"), encodedVal + "$1");
+				url = url.replace(new RegExp(":" + urlParam + "(\\W|$)", "g"), encodedVal + "$1");
 			} else {
-				url = url.replace(new RegExp("(\/?):" + urlParam + "(\\W)", "g"), function(match, leadingSlashes, tail) {
+				url = url.replace(new RegExp("(\/?):" + urlParam + "(\\W|$)", "g"), function(match, leadingSlashes, tail) {
 					if (tail.charAt(0) === '/') {
 						return tail;
 					} else {
@@ -3977,7 +3977,8 @@ var RESTAdapter = dabl.Adapter.extend({
 });
 
 dabl.RESTAdapter = RESTAdapter;
-;angular.module('dabl', [])
+
+dabl.RESTAdapter.Route = Route;;angular.module('dabl', [])
 .factory('dabl', ['$http', '$q', function($http, $q){
 
 	dabl.Deferred = function () {
@@ -4279,7 +4280,7 @@ function(
 angular.module('dablJs.api', [
 	'dabl',
 	'dablJs.security'
-]);'use strict';
+]);;'use strict';
 
 angular.module('dablJs.api')
 
@@ -4290,93 +4291,90 @@ function (
 	$rootScope,
 	$localstorage
 ) {
-		var obj = {}, loggedInUser = null;
+	var obj = {}, loggedInUser = null;
 
-		obj.setLoggedInUser = function (user) {
-			loggedInUser = user;
-		};
+	obj.setLoggedInUser = function (user) {
+		loggedInUser = user;
+	};
 
-		obj.setUser = function (user) {
-			var olduser = loggedInUser;
-			obj.setLoggedInUser(user);
+	obj.setUser = function (user) {
+		var olduser = loggedInUser;
+		obj.setLoggedInUser(user);
 
-			if (olduser === null && user && user.id) {
-				$rootScope.$broadcast('dabl-auth.user.logged-in');
+		if (olduser === null && user && user.id) {
+			$rootScope.$broadcast('dabl-auth.user.logged-in');
 
-			} else if (user === null) {
-				$rootScope.$broadcast('dabl-auth.user.logged-out');
-			}
-
-			$localstorage.set('user', user);
-		};
-
-		obj.getUser = function () {
-			return loggedInUser;
-		};
-
-		obj.getToken = function () {
-			if (loggedInUser && typeof loggedInUser.authToken !== 'undefined') {
-				return loggedInUser.authToken;
-			}
-			return null;
-		};
-
-		obj.getUsername = function () {
-			if (loggedInUser && typeof loggedInUser.username !== 'undefined') {
-				return loggedInUser.username;
-			}
-			return null;
-		};
-
-		obj.getEmail = function() {
-			return obj.getUsername();
-		};
-
-		obj.isLoggedIn = function () {
-			return (
-				loggedInUser &&
-				typeof loggedInUser.username !== 'undefined' &&
-				typeof loggedInUser.authToken !== 'undefined'
-			);
-		};
-
-		obj.checkAuthorization = function (toState) {
-			return !((
-					typeof toState === 'undefined' ||
-					typeof toState.data === 'undefined' ||
-					typeof toState.data.bypassAuth === 'undefined' ||
-					!toState.data.bypassAuth
-				) &&
-				!obj.isLoggedIn()
-			);
-		};
-
-		obj.globalAdminIsLoggedIn = function () {
-			var user = obj.getUser();
-			return user && user.type === 1;
-		};
-
-		obj.projectManagerIsLoggedIn = function () {
-			var user = obj.getUser();
-			return user && user.type === 2;
-		};
-
-		obj.reset = function() {
-			obj.setUser(null);
-		};
-
-		obj.passwordIsValid = function(password) {
-			return (password.length >= 8 && password.match(/[A-Z]+/) && password.match(/[a-z]+/) && password.match(/[0-9]+/));
+		} else if (user === null) {
+			$rootScope.$broadcast('dabl-auth.user.logged-out');
 		}
 
-		var u = $localstorage.get('user');
-		if (u) {
-			obj.setUser(u);
-		}
+		$localstorage.set('user', user);
+	};
 
-		return obj;
+	obj.getUser = function () {
+		return loggedInUser;
+	};
+
+	obj.getToken = function () {
+		if (loggedInUser && typeof loggedInUser.authToken !== 'undefined') {
+			return loggedInUser.authToken;
+		}
+		return null;
+	};
+
+	obj.getUsername = function () {
+		if (loggedInUser && typeof loggedInUser.username !== 'undefined') {
+			return loggedInUser.username;
+		}
+		return null;
+	};
+
+	obj.getEmail = function () {
+		return obj.getUsername();
+	};
+
+	obj.isLoggedIn = function () {
+		return (
+			loggedInUser &&
+			typeof loggedInUser.username !== 'undefined' &&
+			typeof loggedInUser.authToken !== 'undefined'
+		);
+	};
+
+	obj.checkAuthorization = function (toState) {
+		return !((
+				typeof toState === 'undefined' ||
+				typeof toState.data === 'undefined' ||
+				typeof toState.data.bypassAuth === 'undefined' || !toState.data.bypassAuth
+			) && !obj.isLoggedIn()
+		);
+	};
+
+	obj.globalAdminIsLoggedIn = function () {
+		var user = obj.getUser();
+		return user && user.type === 1;
+	};
+
+	obj.projectManagerIsLoggedIn = function () {
+		var user = obj.getUser();
+		return user && user.type === 2;
+	};
+
+	obj.reset = function () {
+		obj.setUser(null);
+	};
+
+	obj.passwordIsValid = function (password) {
+		return (password.length >= 8 && password.match(/[A-Z]+/) && password.match(/[a-z]+/) && password.match(/[0-9]+/));
+	};
+
+	var u = $localstorage.get('user');
+	if (u) {
+		obj.setUser(u);
 	}
-]);
+
+	return obj;
+}]);
 ;'use strict';
 
 angular.module('dablJs.api')

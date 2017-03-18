@@ -3,4 +3,4 @@
 angular.module('dablJs.api', [
 	'dabl',
 	'dablJs.security'
-])
+]);
