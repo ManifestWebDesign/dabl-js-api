@@ -1,6 +1,6 @@
 {
   "name": "dabl-js-api",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Client for communicating with DABL backend (https://bitbucket.org/manifestwebdesign/dabl-api)",
   "devDependencies": {
     "grunt": "~0.4.1",
