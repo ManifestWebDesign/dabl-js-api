@@ -3716,8 +3716,15 @@ Route.prototype = {
 		var url = this.url(params);
 		params = params || {};
 
-		url = url.replace(/\/?#$/, '');
-		var query = dabl.serialize(params);
+		var filteredParams = {};
+		for (var key in params) {
+			if (params.hasOwnProperty(key) && !this.urlParams[key]) {
+				filteredParams[key] = params[key];
+			}
+		}
+
+		var query = dabl.serialize(filteredParams);
+
 		url = url.replace(/\/*$/, '');
 		return url + (query.length ? '?' + query : '');
 	}
@@ -4033,15 +4040,7 @@ dabl.RESTAdapter.Route = Route;;angular.module('dabl', [])
 				data[fieldName] = value;
 			}
 
-			$http({
-				url: route.url(data),
-				method: 'POST',
-				data: data,
-				headers: {
-					'X-HTTP-Method-Override': method
-				}
-			})
-			.success(function(data, status, headers, config) {
+			var success = function(data, status, headers, config) {
 				if (!self._isValidResponseObject(data, model)) {
 					error.apply(this, arguments);
 					return;
@@ -4055,8 +4054,17 @@ dabl.RESTAdapter.Route = Route;;angular.module('dabl', [])
 					self.cache(model._table, instance[pk], instance);
 				}
 				def.resolve(instance);
+			};
+
+			$http({
+				url: route.url(data),
+				method: 'POST',
+				data: data,
+				headers: {
+					'X-HTTP-Method-Override': method
+				}
 			})
-			.error(error);
+			.then(success, error);
 			return def.promise;
 		},
 
@@ -4078,15 +4086,7 @@ dabl.RESTAdapter.Route = Route;;angular.module('dabl', [])
 				def = $q.defer(),
 				error = this._getErrorCallback(def);
 
-			$http({
-				url: route.url(instance.toJSON()),
-				method: 'POST',
-				data: {},
-				headers: {
-					'X-HTTP-Method-Override': 'DELETE'
-				}
-			})
-			.success(function(data, status, headers, config) {
+			var success = function(data, status, headers, config) {
 				if (data && (data.error || (data.errors && data.errors.length))) {
 					error.apply(this, arguments);
 					return;
@@ -4095,8 +4095,17 @@ dabl.RESTAdapter.Route = Route;;angular.module('dabl', [])
 					self.cache(model._table, instance[pk], null);
 				}
 				def.resolve(instance);
+			};
+
+			$http({
+				url: route.url(instance.toJSON()),
+				method: 'POST',
+				data: {},
+				headers: {
+					'X-HTTP-Method-Override': 'DELETE'
+				}
 			})
-			.error(error);
+			.then(success, error);
 
 			return def.promise;
 		},
@@ -4126,9 +4135,7 @@ dabl.RESTAdapter.Route = Route;;angular.module('dabl', [])
 				data = q.getSimpleJSON();
 			}
 
-			$http
-			.get(route.urlGet(data))
-			.success(function(data, status, headers, config) {
+			var success = function(data, status, headers, config) {
 				if (!self._isValidResponseObject(data, model)) {
 					error.apply(this, arguments);
 					return;
@@ -4137,8 +4144,11 @@ dabl.RESTAdapter.Route = Route;;angular.module('dabl', [])
 					data = data.shift();
 				}
 				def.resolve(model.inflate(data));
-			})
-			.error(error);
+			};
+
+			$http
+			.get(route.urlGet(data))
+			.then(success, error);
 			return def.promise;
 		},
 
@@ -4149,9 +4159,7 @@ dabl.RESTAdapter.Route = Route;;angular.module('dabl', [])
 				def = $q.defer(),
 				error = this._getErrorCallback(def);
 
-			$http
-			.get(route.urlGet(data))
-			.success(function(data, status, headers, config) {
+			var success = function(data, status, headers, config) {
 				if (typeof data !== 'object' || data.error || (data.errors && data.errors.length)) {
 					error.apply(this, arguments);
 					return;
@@ -4160,8 +4168,11 @@ dabl.RESTAdapter.Route = Route;;angular.module('dabl', [])
 					data = [data];
 				}
 				def.resolve(model.inflateArray(data));
-			})
-			.error(error);
+			};
+
+			$http
+			.get(route.urlGet(data))
+			.then(success, error);
 			return def.promise;
 		},
 
@@ -4172,17 +4183,18 @@ dabl.RESTAdapter.Route = Route;;angular.module('dabl', [])
 				def = $q.defer(),
 				error = this._getErrorCallback(def);
 
-			$http
-			.get(route.urlGet(data))
-			.success(function(data, status, headers, config) {
+			var success = function(data, status, headers, config) {
 				var count = parseInt(data.total, 10);
 				if (isNaN(count) || typeof data !== 'object' || data.error || (data.errors && data.errors.length)) {
 					error.apply(this, arguments);
 					return;
 				}
 				def.resolve(count);
-			})
-			.error(error);
+			};
+
+			$http
+			.get(route.urlGet(data))
+			.then(success, error);
 			return def.promise;
 		}
 	});

@@ -1,12 +1,12 @@
 {
 	"name": "dabl-js-api",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"ignore": [],
 	"main": "dist/dabl-js.api.js",
 	"devDependencies": {
-		"dabl": "~1.2.0",
+		"dabl": "~1.2.1",
 		"dabl-js-security": "https://github.com/ManifestWebDesign/dabl-js-security.git#1.0.0",
-		"angular": "~1.3.0",
-		"angular-mocks": "~1.3.0"
+		"angular": "^1.3.0",
+		"angular-mocks": "^1.3.0"
 	}
 }
