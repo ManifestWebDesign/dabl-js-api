@@ -1,6 +1,6 @@
 {
 	"name": "dabl-js-api",
-	"version": "1.0.3",
+	"version": "1.0.5",
 	"ignore": [],
 	"main": "dist/dabl-js.api.js",
 	"devDependencies": {
